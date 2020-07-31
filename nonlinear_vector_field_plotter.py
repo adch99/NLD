@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 
 n = 40 # Number of points per x and y axis
 logscale = True # Denote vector magnitude by log-scale colouring
-polar = False # Plot in polar coordinates
+polar = True # Plot in polar coordinates
 
 # Set both 0 for a slope plot. Leave at default unless it clogs the plot.
 headwidth = 2 # Arrow head length (default: 2)
@@ -16,23 +16,23 @@ headlength = 3 # Arrow head width (default: 3)
 xlims = (-3, 3)
 ylims = (-3, 3)
 
-epsilon = -1
+
 # plt.set_cmap("jet")
 
 # Declare your parameters here.
-
+epsilon = 1
 
 def fx(x, y):
-    return y
+    return -epsilon * y**3 + y
 
 def fy(x, y):
-    return -x - epsilon*x**3
+    return epsilon * x**3 - x
 
 def fr(r, θ):
-    return r * np.sin(θ)
+    return (r - 1) * (r - 2)
 
 def ft(r, θ):
-    return r**2 - 0.5 * (np.sin(2*θ))**2
+    return r - 1.5
 
 # ------------------------- #
 # End of user configuration #
@@ -41,12 +41,12 @@ def ft(r, θ):
 if polar == True:
     def fx(x, y):
         r = np.sqrt(x**2 + y**2)
-        θ = np.arctan(y / x)
+        θ = np.arctan2(y , x)
         return fr(r, θ)*np.cos(θ) - r*np.sin(θ)*ft(r, θ)
 
     def fy(x, y):
         r = np.sqrt(x**2 + y**2)
-        θ = np.arctan(y / x)
+        θ = np.arctan2(y , x)
         return fr(r, θ)*np.sin(θ) + r*np.cos(θ)*ft(r, θ)
 
 x = np.linspace(*xlims, n)
