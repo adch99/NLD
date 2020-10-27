@@ -25,10 +25,10 @@ ylims = (-3, 3)
 # ---------------------- #
 
 def fx(x, y):
-    return -y
+    return -x/(x**2 + y**2)
 
 def fy(x, y):
-    return y
+    return -y/(x**2 + y**2)
 
 def fr(r, θ):
     return r*(1 - r**2)*((r*np.sin(θ))**2 + ((r*np.cos(θ))**2 - 1)**2)
@@ -48,7 +48,7 @@ if polar == True:
 
     def fy(x, y):
         r = np.sqrt(x**2 + y**2)
-        θ = np.arctan2(y , x)
+        θ = np.arctan2(y, x)
         return fr(r, θ)*np.sin(θ) + r*np.cos(θ)*ft(r, θ)
     # ax = plt.subplot(111, projection="polar")
 
