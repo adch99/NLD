@@ -6,10 +6,12 @@ from mpl_toolkits.mplot3d import Axes3D
 s = 10
 b = 8.0 / 3.0
 n0 = 3 # For each of the three coordinates => effectively n0**3
-n = 10**7
+ntransient = 10**5
+ntsamples = 3*10**4
+n = ntransient + ntsamples
 tspan = (0, 200)
 teval = np.linspace(*tspan, n)
-nfigs = 4
+nfigs = 5
 cmap = plt.get_cmap("jet")
 
 def lorenz(t, v, r):
@@ -20,11 +22,14 @@ def lorenz(t, v, r):
     return np.array([dx, dy, dz])
 
 def varying_r():
-    rvals = [10, 22, 24.5, 100, 126.52, 400]
+    # rvals = [10, 22, 24.5, 100, 126.52, 400]
+    rvals = np.linspace(165.5, 166.5, 11)
+    pos0 = np.random.uniform(-50, 50, size=(3,)) # Same starting point for all
     for r in rvals:
         figs = pregraphing(r)
         # varying_initial_cond(r, figs)
-        single_random_point(r, figs) # When you want for only one random point
+        # single_random_point(r, figs) # When you want for only one random point
+        run(r, pos0, figs) # Same starting point for all
         postgraphing(r, figs)
 
 def single_random_point(r, figs):
@@ -61,13 +66,13 @@ def run(r, pos0, figs, key=None):
         print(f"Integration for r={r}, pos0={pos0} failed: {sol.message}")
 
 def grapher(r, pos0, sol, figs, key=None):
-    t = sol.t
-    x, y, z = sol.y
+    t = sol.t[ntransient+1:]
+    x, y, z = sol.y[:, ntransient+1:]
     pos0string = np.array2string(pos0, precision=3, suppress_small=True,
         separator="_", formatter={"float": "{: 7.2f}".format})
     label = pos0string # Add integration length etc later if needed
     axes = [fig.gca() for fig in figs]
-    args = [(t, x), (t, y), (x, y), (x, y, z)]
+    args = [(t, x), (t, y), (x, y), (x, z), (x, y, z)]
 
     if key is not None:
         color = cmap(key/n0**3)
@@ -81,9 +86,9 @@ def pregraphing(r):
     figs = [plt.figure(figsize=(20, 10)) for i in range(nfigs)]
     axes = [fig.gca() for fig in figs[:-1]]
     axes.append(figs[-1].gca(projection="3d"))
-    xlabels = [r"$t$", r"$t$", r"$x$", r"$x$"]
-    ylabels = [r"$x$", r"$y$", r"$y$", r"$y$"]
-    titlesuffixes = [r"$x$ vs $t$", r"$y$ vs $t$", r"$y$ vs $x$", "3d plot"]
+    xlabels = [r"$t$", r"$t$", r"$x$", r"$x$", r"$x$"]
+    ylabels = [r"$x$", r"$y$", r"$y$", r"$y$", r"$z$"]
+    titlesuffixes = [r"$x$ vs $t$", r"$y$ vs $t$", r"$y$ vs $x$", r"$z$ vs $x$", "3d plot"]
     titles = [f"r = {r} " + suffix for suffix in titlesuffixes]
     for i in range(nfigs):
          axes[i].set_xlabel(xlabels[i])
@@ -93,7 +98,7 @@ def pregraphing(r):
 
 def postgraphing(r, figs):
     axes = [fig.gca() for fig in figs]
-    filenameprefixes = ["xvst", "yvst", "xvsy"]
+    filenameprefixes = ["xvst", "yvst", "xvsy", "zvsx"]
     for i in range(nfigs-1):
          # axes[i].legend()
          figs[i].savefig(f"plots/{filenameprefixes[i]}_r={r}.png")

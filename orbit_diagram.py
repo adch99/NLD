@@ -1,17 +1,25 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-rspan = (3, 4)
+# General orbit diagram plotter
+# copied from logistic_map_orbit_diagram.py
+
+rspan = (1, 5)
 rsample_size = 1000
+xspan = (0, 1)
+# If the abs(x) goes beyond this value,
+# we reject the orbit as being unstable
+# and count as going to infinity
+xupper_bound = 100
 
 def f(x, r):
-    return r*x*(1-x)
+    return r*np.minimum(x, 1-x)
 
-def get_orbit(r, sample_size=100, skip_transient=300):
-    x = np.random.uniform(0,1)
+def get_orbit(r, sample_size=100, skip_transient=5000):
+    x = np.random.uniform(*xspan)
     for i in range(skip_transient):
         x = f(x, r)
-        if abs(x) > 10:
+        if abs(x) > xupper_bound:
             return np.array([])
 
     samples = []
@@ -23,7 +31,7 @@ def get_orbit(r, sample_size=100, skip_transient=300):
 
 def main():
     rvals = np.linspace(*rspan, rsample_size)
-    fig, ax = plt.subplots(nrows=1, ncols=1, figsize=(10,10))
+    fig, ax = plt.subplots(nrows=1, ncols=1)
     for r in rvals:
         orbit = get_orbit(r)
         rarray = np.zeros(orbit.shape) + r

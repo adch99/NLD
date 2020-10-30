@@ -21,7 +21,7 @@ function liapunov(r, x0)
     return logsum
 end
 
-using PlotlyJS
+using Plots
 r = LinRange(3, 4, 100)
 λ = liapunov.(r, x0)
 for i = 1:length(r)
@@ -31,7 +31,7 @@ p = plot(r, λ, xlabel = "r", ylabel = "λ",
     title = "Logistic Map Liapunov Exponent",
     legend = false)
 scatter!(r, λ)
-savefig("plots/logisitic_map_liapunov_exponent.png")
+savefig("plots/logistic_map_liapunov_exponent.png")
 gui(p)
 println("Press enter to finish:")
 readline()
